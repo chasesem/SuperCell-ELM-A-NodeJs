@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" href="../../favicon.ico">
+
+<title>Dashboard Template for Bootstrap</title>
+
+<!-- Bootstrap core CSS -->
+<link href="../css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="../css/dashboard.css" rel="stylesheet">
+<style>
+.table>thead>tr>th, .table>tbody>tr>td {
+	vertical-align: middle;
+	text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="../html/index.html">SuperCell-ELM-A</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+			</div>
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-12 col-md-12 main">
+
+				<h2 class="sub-header">订单详细信息</h2>
+				<div class="table-responsive">
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>订单ID</th>
+								<th>订单日期</th>
+								<th>商户名称</th>
+								<th>商户地址</th>
+								<th>客户手机号码</th>
+								<th>总价(￥)</th>
+							</tr>
+						</thead>
+						<tbody id="tbody1">
+							
+						</tbody>
+					</table>
+
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>菜品名</th>
+								<th>单价</th>
+								<th>数量</th>
+							</tr>
+						</thead>
+						<tbody id="tbody2">
+
+						</tbody>
+					</table>
+
+				</div>
+				<h2 class="sub-header">投诉内容</h2>
+				<div>
+					<textarea class="form-control" rows="5" id="complaintText" readonly>我就是不爽而已</textarea>
+				</div>
+				<h2 class="sub-header">投诉处理</h2>
+				<a ><button id="btn1" class="btn btn-primary">驳回投诉</button></a>
+				<a ><button id="btn2"  class="btn btn-warning">扣除押金</button></a>
+				<a ><button id="btn3" class="btn btn-danger">拉黑该商户</button></a>
+			</div>
+		</div>
+	</div>
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="../js/jquery-1.11.3.min.js"></script>
+	<script src="../js/bootstrap.min.js"></script>
+</body>
+<script type="text/javascript">
+
+window.onload=function ajRecommend(){
+	var urlParm=window.location.search.substr(1)
+	var merchentlist=urlParm.split("&")
+	var ordersId=(merchentlist[0].split("="))[1]
+
+	var ordersState=(merchentlist[1].split("="))[1]
+	$.ajax({
+	     type: "GET",
+	     url: "/SuperCell-ELM-A/merchantmanage/getOrderItem.do/"+ordersId,
+		 success: function(data){	
+		 	var temp1=""
+		 	var temp2 = ""
+		 	var result = JSON.parse(data)
+		 	console.log(result)
+		 	var address = result[0].address
+		 	var complaintMessage = result[0].complaintMessage
+		 	var dateOfOrder = result[0].dateOfOrder
+		 	var merchantId = result[0].merchantId
+		 	var orderId = result[0].orderId
+		 	var shopName = result[0].shopName
+		 	var  username = result[0].username
+		 	var total = result[0].total/100
+		 	var orderItemsList = result[0].orderItemsList
+		 	temp1+="<tr><td>"+orderId+"</td><td>"+dateOfOrder+"</td><td>"+shopName+"</td><td>"+address+"</td><td>"+username+"</td><td>"+total+"</td></tr>"
+		 	$('#tbody1').append(temp1)
+		 	for(var i = 0 ; i <orderItemsList.length ; i++){
+		 		var count = orderItemsList[i].count
+		 		var dishesName = orderItemsList[i].dishesName
+		 		var price = orderItemsList[i].price / 100
+		 		temp2 +="<tr><td>"+dishesName+"</td><td>"+price+"</td><td>"+count+"</td></tr>"
+		 	}
+		 	$('#tbody2').append(temp2)
+		 	$('#complaintText').html(complaintMessage)
+		 	$('#btn1').click(function(){
+		 		alertbtn(orderId,merchantId,2)
+		 	})
+		 	$('#btn2').click(function(){
+		 		alertbtn(orderId,merchantId,3)
+		 	})
+		 	$('#btn3').click(function(){
+		 		alertbtn(orderId,merchantId,4)
+		 	})
+
+		 },          
+		 error:function(data){
+		 	alert("fail")
+		 }
+	})
+	//$('#btn3').on('click',)
+	
+}
+function alertbtn(orderId,merchantId,state){
+	if(state==4){
+		// $.ajax({
+	 //     type: "GET",
+	 //     url: "/SuperCell-ELM-A/merchantmanage/changeComplaintState.do?orderId="+orderId+"&merchantId="+merchantId+"&state=4",
+		//  error:function(){
+		//  	alert("fail")
+		//  }
+		// })
+		window.location.href= "/SuperCell-ELM-A/merchantmanage/changeComplaintState.do?orderId="+orderId+"&merchantId="+merchantId+"&state=4"
+	}else{
+		// $.ajax({
+		//      type: "GET",
+		//      url: "/SuperCell-ELM-A/merchantmanage/changeComplaintState.do?orderId="+orderId+"&state="+state,
+		// 	 //success: function(data){	},
+		// 	 error:function(){
+		// 		alert("fail")
+		// 	 }
+		// })
+		window.location.href="/SuperCell-ELM-A/merchantmanage/changeComplaintState.do?orderId="+orderId+"&state="+state
+	}
+}
+
+</script>
+</html>

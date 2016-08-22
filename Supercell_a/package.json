@@ -1,0 +1,21 @@
+{
+  "name": "supercell_a",
+  "version": "0.0.1",
+  "description": "supercell_ele_a rewrite By node.js",
+  "main": "bin/www",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "supercell_a"
+  ],
+  "author": "chingyam",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "mongoose": "^4.5.9",
+    "request": "^2.74.0",
+    "stomp-client": "^0.8.1"
+  }
+}
